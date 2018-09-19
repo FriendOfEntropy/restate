@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=RESTate
+GenericName=RESTate
+Comment=Simple native REST UI test client.
+Categories=GTK;Utility;Internet;Development;
+Exec=com.github.friendofentropy.restate
+Icon=com.github.friendofentropy.restate.png
+Terminal=false
+Type=Application
+X-GNOME-Gettext-Domain=com.github.friendofentropy.restate
+Keywords=rest;api;web;client;
