@@ -24,33 +24,54 @@ namespace RESTate {
 
     public class RequestHeaderBox : Box {
 
-        public Button btn_add { get; set; }
-        public Entry entry_key { get; set; }
-        public Entry entry_value { get; set; }
-        public List<NameValuePair> key_value_list;
+        public signal void add_clicked (string name, string value);
+
+        private Button addButton { get; set; }
+        private Entry nameEntry;
+        private Entry valueEntry;
+        private List<NameValuePair> nameValuePairList;
 
         public RequestHeaderBox () {
             spacing = 6;
             orientation = Gtk.Orientation.HORIZONTAL;
 
-            key_value_list = new List<NameValuePair> ();
+            nameValuePairList = new List<NameValuePair> ();
 
-            entry_key = new Entry ();
-            entry_key.hexpand = true;
-            entry_key.placeholder_text = "Key";
+            nameEntry = new Entry ();
+            nameEntry.hexpand = true;
+            nameEntry.placeholder_text = "Name";
 
-            entry_value = new Entry ();
-            entry_value.hexpand = true;
-            entry_value.placeholder_text = "Value";
+            valueEntry = new Entry ();
+            valueEntry.hexpand = true;
+            valueEntry.placeholder_text = "Value";
 
-            btn_add = new Button.with_label ("Add");
-            btn_add.width_request = 70;
-            btn_add.expand = false;
-            btn_add.get_style_context ().add_class ("blue-color");
+            addButton = new Button.with_label ("Add");
+            addButton.width_request = 70;
+            addButton.expand = false;
+            addButton.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
 
-            this.add (entry_key);
-            this.add (entry_value);
-            this.add (btn_add);
+            this.add (nameEntry);
+            this.add (valueEntry);
+            this.add (addButton);
+
+            addButton.clicked.connect ( () => {
+                add_clicked (nameEntry.text, valueEntry.text);
+            });
+        }
+
+        public List<NameValuePair> name_value_pairs {
+            get {
+                return nameValuePairList;
+            }
+
+            set {
+                nameValuePairList = value.copy ();
+            }
+        }
+
+        public void clear_entries () {
+            nameEntry.text = "";
+            valueEntry.text = "";
         }
     }
 }

@@ -106,7 +106,7 @@ namespace RESTate {
             //header and body stack
             headerBox = new Box (Gtk.Orientation.VERTICAL, 6);
             requestHeaderBox = new RequestHeaderBox ();
-            requestHeaderBox.btn_add.clicked.connect (add_header_clicked);
+            requestHeaderBox.add_clicked.connect (add_header_clicked);
             headerBox.add (requestHeaderBox);
 
             Stack stack = new Stack ();
@@ -131,50 +131,43 @@ namespace RESTate {
             });
         }
 
-        private void add_header_clicked () {
-            if (requestHeaderBox.entry_key.get_text () == ""
-                || requestHeaderBox.entry_value.get_text () == "") {
-                //statusLabel.label = "Key Value pair must not be empty";
+        private void add_header_clicked (string name, string value) {
+            if (name == "" || value == "") {
                 return;
             }
-            //  statusLabel.label = "";
 
-            var lbl_k = new Entry ();
-            lbl_k.set_text (requestHeaderBox.entry_key.get_text ());
-            lbl_k.editable = false;
-            lbl_k.hexpand = true;
+            var nameLabel = new Entry ();
+            nameLabel.set_text (name);
+            nameLabel.editable = false;
+            nameLabel.hexpand = true;
 
-            var lbl_v = new Entry ();
-            lbl_v.set_text (requestHeaderBox.entry_value.get_text ());
-            lbl_v.editable = false;
-            lbl_v.hexpand = true;
+            var valueLabel = new Entry ();
+            valueLabel.set_text (value);
+            valueLabel.editable = false;
+            valueLabel.hexpand = true;
 
-            var del = new Button.with_label ("Remove");
-            del.get_style_context ().add_class ("red-color");
+            Button removeButton = new Button.with_label ("Remove");
+            removeButton.get_style_context ().add_class (Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION);
 
             NameValuePair header = new NameValuePair ();
-            header.name = lbl_k.get_text ();
-            header.value = lbl_v.get_text ();
+            header.name = nameLabel.get_text ();
+            header.value = valueLabel.get_text ();
 
-            requestHeaderBox.key_value_list.append (header);
+            requestHeaderBox.name_value_pairs.append (header);
 
-            var row_box = new Box (Gtk.Orientation.HORIZONTAL, 6);
-            row_box.add (lbl_k);
-            row_box.add (lbl_v);
-            row_box.add (del);
+            Box rowBox = new Box (Gtk.Orientation.HORIZONTAL, 6);
+            rowBox.add (nameLabel);
+            rowBox.add (valueLabel);
+            rowBox.add (removeButton);
 
-            headerBox.add (row_box);
-            del.clicked.connect ( () => {
-                requestHeaderBox.key_value_list.remove (header);
-
-                stdout.printf ("Delete, number of headers: %u\n", requestHeaderBox.key_value_list.length ());
-                headerBox.remove (row_box);
+            headerBox.add (rowBox);
+            removeButton.clicked.connect ( () => {
+                requestHeaderBox.name_value_pairs.remove (header);
+                headerBox.remove (rowBox);
             });
 
-            requestHeaderBox.entry_key.set_text ("");
-            requestHeaderBox.entry_value.set_text ("");
+            requestHeaderBox.clear_entries ();
             show_all ();
-            stdout.printf ("Add, number of headers: %u\n", requestHeaderBox.key_value_list.length ());
         }
 
         public string get_http_method () {

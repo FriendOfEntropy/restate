@@ -67,7 +67,7 @@ namespace RESTate {
 
                 requestView.status_text = "Waiting For Response";
 
-                foreach (var header in requestView.request_header_box.key_value_list) {
+                foreach (var header in requestView.request_header_box.name_value_pairs) {
                     message.request_headers.append (header.name, header.value);
                 }
 

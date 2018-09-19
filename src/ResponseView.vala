@@ -25,7 +25,7 @@ namespace RESTate {
 
     public class ResponseView : Gtk.Grid {
 
-        private ScrolledWindow scrolled_res_body;
+        private ScrolledWindow bodyLabelWindow;
         private Label lbl_res_code_title;
         private Label lbl_res_code;
         private Label lbl_res_body_title;
@@ -36,10 +36,10 @@ namespace RESTate {
             column_spacing = 6;
             row_spacing = 6;
 
-            scrolled_res_body = new ScrolledWindow (null, null);
-            scrolled_res_body.height_request = 250;
-            scrolled_res_body.vexpand = true;
-            scrolled_res_body.hexpand = true;
+            bodyLabelWindow = new ScrolledWindow (null, null);
+            bodyLabelWindow.height_request = 250;
+            bodyLabelWindow.vexpand = true;
+            bodyLabelWindow.hexpand = true;
 
             lbl_res_code = new Label ("");
             lbl_res_code.set_line_wrap (true);
@@ -58,12 +58,12 @@ namespace RESTate {
             lbl_res_body_title.set_use_markup (true);
             lbl_res_body_title.set_line_wrap (true);
 
-            scrolled_res_body.add (lbl_res_body);
+            bodyLabelWindow.add (lbl_res_body);
 
             attach (lbl_res_code_title, 0, 0, 1, 1);
             attach (lbl_res_code, 0, 1, 1, 1);
             attach (lbl_res_body_title, 0, 2, 1, 1);
-            attach (scrolled_res_body, 0, 3, 1, 1);
+            attach (bodyLabelWindow, 0, 3, 1, 1);
         }
 
         public void set_response_body_text (string body_text) {
