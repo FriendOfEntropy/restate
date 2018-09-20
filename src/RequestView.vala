@@ -33,14 +33,31 @@ namespace RESTate {
         private Box headerBox;
         private ScrolledWindow bodyTextWindow;
         private TextView bodyTextView;
+        private ScrolledWindow previewWindow;
+        private TextView previewTextView;
         private Button submitButton;
         private RequestHeaderBox requestHeaderBox;
 
-        public RequestHeaderBox request_header_box {
-            get {
-                return requestHeaderBox;
+        private List<NameValuePair> nameValuePairList;
+
+        private string BODY = "Body";
+        private string HEADERS = "Headers";
+        private string PREVIEW = "Preview";
+
+
+        public List<NameValuePair> headers {
+            owned get {
+                List<NameValuePair> headers_copy = new List<NameValuePair>();
+                headers_copy = nameValuePairList.copy ();
+                return headers_copy;
             }
         }
+
+        //  public RequestHeaderBox request_header_box {
+        //      get {
+        //          return requestHeaderBox;
+        //      }
+        //  }
 
         public string status_text {
             get {
@@ -78,7 +95,7 @@ namespace RESTate {
             statusLabel.set_line_wrap (true);
 
             submitButton = new Button.with_label ("Submit");
-            submitButton.get_style_context ().add_class ("blue-color");
+            submitButton.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
             submitButton.width_request = 70;
 
             bodyLabel = new Label ("<b>Body</b>");
@@ -87,23 +104,34 @@ namespace RESTate {
             bodyLabel.valign = Gtk.Align.START;
 
             bodyTextView = new TextView ();
-            bodyTextView.set_wrap_mode (Gtk.WrapMode.WORD);
+            bodyTextView.wrap_mode = Gtk.WrapMode.WORD;
             bodyTextView.hexpand = false;
             bodyTextView.vexpand = true;
 
             bodyTextWindow = new ScrolledWindow (null, null);
             bodyTextWindow.hexpand = false;
             bodyTextWindow.vexpand = true;
-
             bodyTextWindow.height_request = 300;
             bodyTextWindow.add (bodyTextView);
+
+            previewTextView = new TextView ();
+            previewTextView.wrap_mode = Gtk.WrapMode.WORD;
+            previewTextView.hexpand = false;
+            previewTextView.vexpand = true;
+            previewTextView.editable = false;
+
+            previewWindow = new ScrolledWindow (null, null);
+            previewWindow.hexpand = false;
+            previewWindow.vexpand = true;
+            previewWindow.height_request = 300;
+            previewWindow.add (previewTextView);
 
             Box topBox = new Box (Gtk.Orientation.HORIZONTAL, 6);
             topBox.add (httpMethodsComboBox);
             topBox.add (urlEntry);
             topBox.add (submitButton);
 
-            //header and body stack
+            nameValuePairList = new List<NameValuePair> ();
             headerBox = new Box (Gtk.Orientation.VERTICAL, 6);
             requestHeaderBox = new RequestHeaderBox ();
             requestHeaderBox.add_clicked.connect (add_header_clicked);
@@ -112,14 +140,62 @@ namespace RESTate {
             Stack stack = new Stack ();
             stack.set_transition_type (Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
             stack.set_transition_duration (400);
-            stack.add_titled (headerBox, "Headers", "Headers");
-            stack.add_titled (bodyTextWindow, "Body", "Body");
+            stack.add_titled (bodyTextWindow, BODY, BODY);
+            stack.add_titled (headerBox, HEADERS, HEADERS);
+            stack.add_titled (previewWindow, PREVIEW, PREVIEW);
 
-            StackSwitcher switcher = new StackSwitcher ();
-            switcher.stack = stack;
+            Gtk.Grid tabHeader = new Gtk.Grid ();
+
+            Granite.Widgets.ModeButton tabs = new Granite.Widgets.ModeButton ();
+            tabs.append (new TabHeaderButton ("accessories-text-editor", BODY, _(BODY)));
+            tabs.append (new TabHeaderButton ("x-office-spreadsheet", HEADERS, _(HEADERS)));
+            tabs.append (new TabHeaderButton ("x-office-document", PREVIEW, _(PREVIEW)));
+            tabs.set_active (0);
+            tabs.margin = 10;
+            tabs.margin_bottom = 9;
+
+            tabHeader.attach (tabs, 0, 0, 1, 1);
+
+            tabs.mode_changed.connect ((tab) => {
+
+                if (tab.name == BODY) {
+                }
+
+                if (tab.name == HEADERS) {
+                }
+
+                if (tab.name == PREVIEW) {
+                    //string method = requestView.get_http_method ();
+                    //string url = requestView.get_url_text ();
+
+                    if ((urlEntry.text != null) && (urlEntry.text != "")) {
+
+                        Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
+
+                        StringBuilder sb = new StringBuilder ();
+                        sb.append ("%s: %s\n".printf (message.method, message.uri.get_path ()));
+
+                        foreach (NameValuePair header in nameValuePairList) {
+                            sb.append ("%s: %s\n".printf (header.name, header.value));
+                        }
+
+                        sb.append (bodyTextView.buffer.text);
+
+                        //message.request_body.append_take (bodyTextView.buffer.text.data);
+
+                        previewTextView.buffer.text = sb.str;
+                    }
+                }
+
+                stack.set_visible_child_name (tab.name);
+            });
+
+
+            //  StackSwitcher switcher = new StackSwitcher ();
+            //  switcher.stack = stack;
 
             Box bottomBox = new Box (Gtk.Orientation.VERTICAL, 0);
-            bottomBox.pack_start (switcher, false, false, 3);
+            bottomBox.pack_start (tabHeader, false, false, 3);
             bottomBox.pack_start (stack, true, true, 0);
 
             //Main Layout
@@ -153,7 +229,7 @@ namespace RESTate {
             header.name = nameLabel.get_text ();
             header.value = valueLabel.get_text ();
 
-            requestHeaderBox.name_value_pairs.append (header);
+            nameValuePairList.append (header);
 
             Box rowBox = new Box (Gtk.Orientation.HORIZONTAL, 6);
             rowBox.add (nameLabel);
@@ -161,8 +237,9 @@ namespace RESTate {
             rowBox.add (removeButton);
 
             headerBox.add (rowBox);
+
             removeButton.clicked.connect ( () => {
-                requestHeaderBox.name_value_pairs.remove (header);
+                nameValuePairList.remove (header);
                 headerBox.remove (rowBox);
             });
 

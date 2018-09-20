@@ -16,6 +16,7 @@ config_header = configure_file(
 )
 
 glib_dep = dependency('glib-2.0', version: '>=2.30.0')
+granite_dep = dependency('granite', version: '>=2.30.0')
 gio_dep = dependency('gio-2.0', version: '>=2.26')
 gee_dep = dependency('gee-0.8', version: '>=0.8')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.6.0')
@@ -29,6 +30,7 @@ dependencies = [
     gee_dep,
     gtk_dep,
     json_dep,
+    granite_dep,
     libsoup_dep
 ]
 
@@ -36,11 +38,12 @@ dependencies = [
 code_files = files(
     'Application.vala',
     'MainWindow.vala',
-    'RequestView.vala',
-    'ResponseView.vala',
     'NameValuePair.vala',
+    'RequestView.vala',
     'RequestHeaderBox.vala',
-    'Stylesheet.vala'
+    'ResponseView.vala',
+    'Stylesheet.vala',
+    'TabHeaderButton.vala'
 )
 
 

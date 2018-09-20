@@ -29,13 +29,10 @@ namespace RESTate {
         private Button addButton { get; set; }
         private Entry nameEntry;
         private Entry valueEntry;
-        private List<NameValuePair> nameValuePairList;
 
         public RequestHeaderBox () {
             spacing = 6;
             orientation = Gtk.Orientation.HORIZONTAL;
-
-            nameValuePairList = new List<NameValuePair> ();
 
             nameEntry = new Entry ();
             nameEntry.hexpand = true;
@@ -57,16 +54,6 @@ namespace RESTate {
             addButton.clicked.connect ( () => {
                 add_clicked (nameEntry.text, valueEntry.text);
             });
-        }
-
-        public List<NameValuePair> name_value_pairs {
-            get {
-                return nameValuePairList;
-            }
-
-            set {
-                nameValuePairList = value.copy ();
-            }
         }
 
         public void clear_entries () {

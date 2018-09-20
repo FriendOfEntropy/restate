@@ -34,30 +34,27 @@ namespace RESTate {
 
         construct {
 
-            //set window params
+            string REQ = "Request";
+            string RESP = "Response";
+
             this.title = "RESTate";
             this.window_position = Gtk.WindowPosition.CENTER;
             this.set_default_size (800,400);
             this.destroy.connect (Gtk.main_quit);
 
-            //create stack for request and response
-            var stack = new Gtk.Stack ();
+            Gtk.Stack stack = new Gtk.Stack ();
             stack.set_transition_type (Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
             stack.set_transition_duration (400);
 
-            string REQUEST_TITLE = "Request";
-            string RESPONSE_TITLE = "Response";
+            RequestView requestView = new RequestView ();
+            ResponseView responseView = new ResponseView ();
 
-            var requestView = new RequestView ();
-            var responseView = new ResponseView ();
-
-            //set submit callback function
             requestView.submit_clicked.connect ( () => {
 
                 string method = requestView.get_http_method ();
                 string url = requestView.get_url_text ();
-                var session = new Soup.Session ();
-                var message = new Soup.Message (method, url);
+                Soup.Session session = new Soup.Session ();
+                Soup.Message message = new Soup.Message (method, url);
 
 
                 if (message.get_uri () == null) {
@@ -67,7 +64,7 @@ namespace RESTate {
 
                 requestView.status_text = "Waiting For Response";
 
-                foreach (var header in requestView.request_header_box.name_value_pairs) {
+                foreach (var header in requestView.headers) {
                     message.request_headers.append (header.name, header.value);
                 }
 
@@ -76,24 +73,22 @@ namespace RESTate {
 
                 session.queue_message (message, (sess, mess) => {
                     requestView.status_text = "";
-                    responseView.set_response_code_text ("%u".printf (mess.status_code));
-                    responseView.set_response_body_text ( (string) mess.response_body.flatten ().data);
-                    stack.set_visible_child_name (RESPONSE_TITLE);
+                    responseView.response_code = "%u".printf (mess.status_code);
+                    responseView.response_body = (string) mess.response_body.flatten ().data;
+                    stack.set_visible_child_name (RESP);
                 });
             });
 
-            stack.add_titled (requestView, REQUEST_TITLE, REQUEST_TITLE);
-            stack.add_titled (responseView, RESPONSE_TITLE, RESPONSE_TITLE);
+            stack.add_titled (requestView, REQ, REQ);
+            stack.add_titled (responseView, RESP, RESP);
 
-            //create the stack switcher
-            var sw = new Gtk.StackSwitcher ();
+            Gtk.StackSwitcher sw = new Gtk.StackSwitcher ();
             sw.stack = stack;
             sw.halign = Gtk.Align.CENTER;
             sw.vexpand = false;
 
-            //put the stack and stack switcher to box
-            //then add the box to window
-            var vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+
+            Gtk.Box vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
             vbox.pack_start (sw, false, false, 12);
             vbox.pack_start (stack, true, true,0);
             this.add (vbox);
