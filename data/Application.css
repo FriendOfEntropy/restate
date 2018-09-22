@@ -1,5 +1,8 @@
 .titlebar {
     transition: 500ms ease;
+    background: #9bdb4d;
+    color: black;
+    text-shadow: none;
 }
 
 .blue-color {

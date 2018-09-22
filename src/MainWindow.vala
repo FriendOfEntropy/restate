@@ -64,7 +64,7 @@ namespace RESTate {
 
                 requestView.status_text = "Waiting For Response";
 
-                foreach (var header in requestView.headers) {
+                foreach (NameValuePair header in requestView.headers) {
                     message.request_headers.append (header.name, header.value);
                 }
 
@@ -92,6 +92,14 @@ namespace RESTate {
             vbox.pack_start (sw, false, false, 12);
             vbox.pack_start (stack, true, true,0);
             this.add (vbox);
+
+
+            Gtk.CssProvider css_provider = new Gtk.CssProvider ();
+            css_provider.load_from_resource ("/com/github/friendofentropy/restate/Application.css");
+
+            Gtk.StyleContext.add_provider_for_screen (
+                Gdk.Screen.get_default (), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
 
             show_all ();
             show ();

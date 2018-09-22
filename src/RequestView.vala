@@ -170,20 +170,52 @@ namespace RESTate {
 
                     if ((urlEntry.text != null) && (urlEntry.text != "")) {
 
-                        Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
+                        //  Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
+                        //  message.request_body.append_take (bodyTextView.buffer.text.data);
 
-                        StringBuilder sb = new StringBuilder ();
-                        sb.append ("%s: %s\n".printf (message.method, message.uri.get_path ()));
+                        //  StringBuilder sb = new StringBuilder ();
+                        //  sb.append ("%s: %s\n".printf (message.method, message.uri.get_path ()));
 
-                        foreach (NameValuePair header in nameValuePairList) {
-                            sb.append ("%s: %s\n".printf (header.name, header.value));
+                        //  foreach (NameValuePair header in nameValuePairList) {
+                        //      message.request_headers.append (header.name, header.value);
+                        //  }
+
+                        //  message.request_headers.foreach ((name, val) => {
+                        //      sb.append ("%s: %s\n".printf (name, val));
+                        //  });
+
+                        //  sb.append ((string) message.response_body.flatten ().data);
+
+
+
+
+
+
+                        try {
+                            StringBuilder sb = new StringBuilder ();
+
+                            Soup.Session session = new Soup.Session ();
+                            Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
+                            message.request_body.append_take (bodyTextView.buffer.text.data);
+                            foreach (NameValuePair header in nameValuePairList) {
+                                message.request_headers.append (header.name, header.value);
+                            }
+
+                            InputStream stream = session.send (message);
+                            DataInputStream data_stream = new DataInputStream (stream);
+
+
+                            string? line;
+                            while ((line = data_stream.read_line ()) != null) {
+                                sb.append ("%s\n".printf (line));
+                            }
+
+                            previewTextView.buffer.text = sb.str;
+
                         }
-
-                        sb.append (bodyTextView.buffer.text);
-
-                        //message.request_body.append_take (bodyTextView.buffer.text.data);
-
-                        previewTextView.buffer.text = sb.str;
+                        catch (Error e) {
+                            stderr.printf ("Error: %s\n", e.message);
+                        }
                     }
                 }
 

@@ -61,8 +61,8 @@
   <url type="bugtracker">https://github.com/friendofentropy/restate/issues</url>
 
   <custom>
-    <value key="x-appcenter-color-primary">#fff</value>
-    <value key="x-appcenter-color-primary-text">#000</value>
+    <value key="x-appcenter-color-primary">#9bdb4d</value>
+    <value key="x-appcenter-color-primary-text">#000000</value>
     <value key="x-appcenter-suggested-price">0</value>
   </custom>
 </component>
