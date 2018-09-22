@@ -49,27 +49,27 @@ namespace RESTate {
             RequestView requestView = new RequestView ();
             ResponseView responseView = new ResponseView ();
 
-            requestView.submit_clicked.connect ( () => {
+            requestView.submit_clicked.connect ( (message) => {
 
-                string method = requestView.get_http_method ();
-                string url = requestView.get_url_text ();
+                //string method = requestView.get_http_method ();
+                //string url = requestView.get_url_text ();
                 Soup.Session session = new Soup.Session ();
-                Soup.Message message = new Soup.Message (method, url);
+                //Soup.Message message = new Soup.Message (method, url);
 
 
-                if (message.get_uri () == null) {
-                    requestView.status_text = "Invalid URL";
-                    return;
-                }
+                //  if (message.get_uri () == null) {
+                //      requestView.status_text = "Invalid URL";
+                //      return;
+                //  }
 
                 requestView.status_text = "Waiting For Response";
 
-                foreach (NameValuePair header in requestView.headers) {
-                    message.request_headers.append (header.name, header.value);
-                }
+                //  foreach (NameValuePair header in requestView.headers) {
+                //      message.request_headers.append (header.name, header.value);
+                //  }
 
-                string str_body = requestView.get_body_text ();
-                message.request_body.append_take (str_body.data);
+                //  string str_body = requestView.get_body_text ();
+                //  message.request_body.append_take (str_body.data);
 
                 session.queue_message (message, (sess, mess) => {
                     requestView.status_text = "";

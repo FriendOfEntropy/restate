@@ -20,13 +20,15 @@
 */
 
 using Gtk;
+using Soup;
 
 namespace RESTate {
 
     public class RequestView : Gtk.Grid {
-        public signal void submit_clicked ();
+        public signal void submit_clicked (Message msg);
 
         private ComboBoxText httpMethodsComboBox;
+        private ComboBoxText contentTypeComboBox;
         private Entry urlEntry;
         private Label statusLabel;
         private Label bodyLabel;
@@ -76,6 +78,7 @@ namespace RESTate {
             orientation = Gtk.Orientation.VERTICAL;
 
             httpMethodsComboBox = new ComboBoxText ();
+            httpMethodsComboBox.set_tooltip_text ("HTTP Request Method");
             httpMethodsComboBox.append_text ("GET");
             httpMethodsComboBox.append_text ("POST");
             httpMethodsComboBox.append_text ("PUT");
@@ -86,9 +89,16 @@ namespace RESTate {
 
             httpMethodsComboBox.active = 0;
 
+            contentTypeComboBox = new ComboBoxText ();
+            contentTypeComboBox.set_tooltip_text ("Content-Type");
+            contentTypeComboBox.append_text ("JSON");
+            contentTypeComboBox.append_text ("XML");
+            contentTypeComboBox.active = 0;
+            contentTypeComboBox.margin_top = 10;
+            contentTypeComboBox.margin_bottom = 9;
+
             urlEntry = new Entry ();
             urlEntry.placeholder_text = "Enter URL e.g. http://www.example.com";
-            //  urlEntry.width_request = 350;
             urlEntry.hexpand = true;
 
             statusLabel = new Label ("");
@@ -154,7 +164,7 @@ namespace RESTate {
             tabs.margin = 10;
             tabs.margin_bottom = 9;
 
-            tabHeader.attach (tabs, 0, 0, 1, 1);
+            tabHeader.attach (tabs, 1, 0, 1, 1);
 
             tabs.mode_changed.connect ((tab) => {
 
@@ -165,57 +175,21 @@ namespace RESTate {
                 }
 
                 if (tab.name == PREVIEW) {
-                    //string method = requestView.get_http_method ();
-                    //string url = requestView.get_url_text ();
 
                     if ((urlEntry.text != null) && (urlEntry.text != "")) {
 
-                        //  Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
-                        //  message.request_body.append_take (bodyTextView.buffer.text.data);
+                        Message message = prepare_message ();
 
-                        //  StringBuilder sb = new StringBuilder ();
-                        //  sb.append ("%s: %s\n".printf (message.method, message.uri.get_path ()));
+                        StringBuilder sb = new StringBuilder ();
+                        sb.append ("%s: %s\n".printf (httpMethodsComboBox.get_active_text (), urlEntry.text));
 
-                        //  foreach (NameValuePair header in nameValuePairList) {
-                        //      message.request_headers.append (header.name, header.value);
-                        //  }
+                        message.request_headers.foreach ((name, val) => {
+                            sb.append ("%s: %s\n".printf (name, val));
+                        });
 
-                        //  message.request_headers.foreach ((name, val) => {
-                        //      sb.append ("%s: %s\n".printf (name, val));
-                        //  });
+                        sb.append ((string) message.response_body.flatten ().data);
 
-                        //  sb.append ((string) message.response_body.flatten ().data);
-
-
-
-
-
-
-                        try {
-                            StringBuilder sb = new StringBuilder ();
-
-                            Soup.Session session = new Soup.Session ();
-                            Soup.Message message = new Soup.Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
-                            message.request_body.append_take (bodyTextView.buffer.text.data);
-                            foreach (NameValuePair header in nameValuePairList) {
-                                message.request_headers.append (header.name, header.value);
-                            }
-
-                            InputStream stream = session.send (message);
-                            DataInputStream data_stream = new DataInputStream (stream);
-
-
-                            string? line;
-                            while ((line = data_stream.read_line ()) != null) {
-                                sb.append ("%s\n".printf (line));
-                            }
-
-                            previewTextView.buffer.text = sb.str;
-
-                        }
-                        catch (Error e) {
-                            stderr.printf ("Error: %s\n", e.message);
-                        }
+                        previewTextView.buffer.text = sb.str;
                     }
                 }
 
@@ -226,8 +200,12 @@ namespace RESTate {
             //  StackSwitcher switcher = new StackSwitcher ();
             //  switcher.stack = stack;
 
+            Box tabBox = new Box (Gtk.Orientation.HORIZONTAL, 3);
+            tabBox.pack_start (contentTypeComboBox, false, false, 3);
+            tabBox.pack_start (tabHeader, false, false, 3);
+
             Box bottomBox = new Box (Gtk.Orientation.VERTICAL, 0);
-            bottomBox.pack_start (tabHeader, false, false, 3);
+            bottomBox.pack_start (tabBox, false, false, 3);
             bottomBox.pack_start (stack, true, true, 0);
 
             //Main Layout
@@ -235,8 +213,28 @@ namespace RESTate {
             this.add (bottomBox);
 
             submitButton.clicked.connect ( () => {
-                submit_clicked ();
+                submit_clicked (prepare_message ());
             });
+        }
+
+        private Message prepare_message () {
+            Message message = new Message (httpMethodsComboBox.get_active_text (), urlEntry.text);
+            foreach (NameValuePair header in nameValuePairList) {
+                message.request_headers.append (header.name, header.value);
+            }
+            string contentTypeHeaderName = "Content-Type";
+            string contentTypeHaderValue = "JSON";
+            if (contentTypeComboBox.get_active_text () == "JSON") {
+                contentTypeHaderValue = "application/json";
+            }
+            else {
+                contentTypeHaderValue = "application/xml";
+            }
+            message.request_headers.append (contentTypeHeaderName, contentTypeHaderValue);
+
+            message.request_body.append_take (bodyTextView.buffer.text.data);
+
+            return message;
         }
 
         private void add_header_clicked (string name, string value) {
