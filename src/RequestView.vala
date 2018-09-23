@@ -187,7 +187,7 @@ namespace RESTate {
                             sb.append ("%s: %s\n".printf (name, val));
                         });
 
-                        sb.append ((string) message.response_body.flatten ().data);
+                        sb.append ((string) message.request_body.flatten ().data);
 
                         previewTextView.buffer.text = sb.str;
                     }

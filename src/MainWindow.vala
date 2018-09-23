@@ -73,7 +73,8 @@ namespace RESTate {
 
                 session.queue_message (message, (sess, mess) => {
                     requestView.status_text = "";
-                    responseView.response_code = "%u".printf (mess.status_code);
+                    //responseView.response_code = "%u".printf (mess.status_code);
+                    responseView.response_code = "%u: %s".printf (mess.status_code, Soup.Status.get_phrase (mess.status_code));
                     responseView.response_body = (string) mess.response_body.flatten ().data;
                     stack.set_visible_child_name (RESP);
                 });
