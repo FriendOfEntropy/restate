@@ -31,7 +31,6 @@ namespace RESTate {
         private ComboBoxText contentTypeComboBox;
         private Entry urlEntry;
         private Label statusLabel;
-        private Label bodyLabel;
         private Box headerBox;
         private ScrolledWindow bodyTextWindow;
         private TextView bodyTextView;
@@ -54,12 +53,6 @@ namespace RESTate {
                 return headers_copy;
             }
         }
-
-        //  public RequestHeaderBox request_header_box {
-        //      get {
-        //          return requestHeaderBox;
-        //      }
-        //  }
 
         public string status_text {
             get {
@@ -98,20 +91,12 @@ namespace RESTate {
             contentTypeComboBox.margin_bottom = 9;
 
             urlEntry = new Entry ();
-            urlEntry.placeholder_text = "Enter URL e.g. http://www.example.com";
+            urlEntry.placeholder_text = "Enter URL such as http://www.example.com";
             urlEntry.hexpand = true;
-
-            statusLabel = new Label ("");
-            statusLabel.set_line_wrap (true);
 
             submitButton = new Button.with_label ("Submit");
             submitButton.get_style_context ().add_class (Gtk.STYLE_CLASS_SUGGESTED_ACTION);
             submitButton.width_request = 70;
-
-            bodyLabel = new Label ("<b>Body</b>");
-            bodyLabel.set_use_markup (true);
-            bodyLabel.set_line_wrap (true);
-            bodyLabel.valign = Gtk.Align.START;
 
             bodyTextView = new TextView ();
             bodyTextView.wrap_mode = Gtk.WrapMode.WORD;
@@ -196,10 +181,6 @@ namespace RESTate {
                 stack.set_visible_child_name (tab.name);
             });
 
-
-            //  StackSwitcher switcher = new StackSwitcher ();
-            //  switcher.stack = stack;
-
             Box tabBox = new Box (Gtk.Orientation.HORIZONTAL, 3);
             tabBox.pack_start (contentTypeComboBox, false, false, 3);
             tabBox.pack_start (tabHeader, false, false, 3);
@@ -208,7 +189,6 @@ namespace RESTate {
             bottomBox.pack_start (tabBox, false, false, 3);
             bottomBox.pack_start (stack, true, true, 0);
 
-            //Main Layout
             this.add (topBox);
             this.add (bottomBox);
 
@@ -277,18 +257,16 @@ namespace RESTate {
             show_all ();
         }
 
-        public string get_http_method () {
-            return httpMethodsComboBox.get_active_text ();
-        }
+        //  public string get_http_method () {
+        //      return httpMethodsComboBox.get_active_text ();
+        //  }
 
-        public string get_url_text () {
-            return urlEntry.get_text ();
-        }
+        //  public string get_url_text () {
+        //      return urlEntry.get_text ();
+        //  }
 
-
-
-        public string get_body_text () {
-            return bodyTextView.buffer.text;
-        }
+        //  public string get_body_text () {
+        //      return bodyTextView.buffer.text;
+        //  }
     }
 }

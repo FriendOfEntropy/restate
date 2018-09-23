@@ -29,7 +29,6 @@ namespace RESTate {
         private Label responseCodeLabel;
         private Label responseCodeValueLabel;
         private Label responseBodyLabel;
-        //private Label responseBodyLabel;
         private TextView bodyTextView;
 
         public ResponseView () {
@@ -42,18 +41,14 @@ namespace RESTate {
             bodyLabelWindow.vexpand = true;
             bodyLabelWindow.hexpand = true;
 
-            responseCodeValueLabel = new Label ("");
-            responseCodeValueLabel.set_line_wrap (true);
-
             responseCodeLabel = new Label ("<b>Code</b>");
             responseCodeLabel.set_use_markup (true);
             responseCodeLabel.set_line_wrap (true);
+            responseCodeLabel.halign = Align.END;
 
-            //  responseBodyLabel = new Label ("");
-            //  responseBodyLabel.set_line_wrap (true);
-            //  responseBodyLabel.set_selectable (true);
-            //  responseBodyLabel.valign = Gtk.Align.START;
-            //  responseBodyLabel.halign = Gtk.Align.START;
+            responseCodeValueLabel = new Label ("");
+            responseCodeValueLabel.set_line_wrap (true);
+            responseCodeValueLabel.halign = Align.START;
 
             bodyTextView = new TextView ();
             bodyTextView.set_wrap_mode (Gtk.WrapMode.WORD);
@@ -64,22 +59,23 @@ namespace RESTate {
             responseBodyLabel = new Label ("<b>Body</b>");
             responseBodyLabel.set_use_markup (true);
             responseBodyLabel.set_line_wrap (true);
+            responseBodyLabel.halign = Align.START;
 
             bodyLabelWindow.add (bodyTextView);
 
             attach (responseCodeLabel, 0, 0, 1, 1);
-            attach (responseCodeValueLabel, 0, 1, 1, 1);
-            attach (responseBodyLabel, 0, 2, 1, 1);
-            attach (bodyLabelWindow, 0, 3, 1, 1);
+            attach (responseCodeValueLabel, 1, 0, 1, 1);
+            attach (responseBodyLabel, 0, 1, 1, 1);
+            attach (bodyLabelWindow, 0, 2, 2, 1);
         }
 
         public string response_code {
             get {
-                return responseCodeLabel.label;
+                return responseCodeValueLabel.label;
             }
 
             set {
-                responseCodeLabel.label = value;
+                responseCodeValueLabel.label = value;
             }
         }
 

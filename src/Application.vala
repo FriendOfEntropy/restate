@@ -33,9 +33,7 @@ namespace RESTate {
             //                           "id", Secret.SchemaAttributeType.INTEGER,
             //                           "schema", Secret.SchemaAttributeType.STRING);
 
-            //  settings = new Sequeler.Services.Settings ();
-            //  password_mngr = new Sequeler.Services.PasswordManager ();
-            //  upgrade_mngr = new Sequeler.Services.UpgradeManager ();
+            //  settings = new Settings ();
 
             windows = new GLib.List <MainWindow> ();
         }
